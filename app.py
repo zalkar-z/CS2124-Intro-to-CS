@@ -8,7 +8,7 @@
 #
 
 # import files
-from flask import Flask, request
+from flask import Flask, request, render_template, session, url_for, escape, redirect
 from sqlalchemy import create_engine
 from sqlalchemy.orm import scoped_session, sessionmaker
 
@@ -19,26 +19,68 @@ engine = create_engine('postgres://evvuybdksjmxgc:793e1cae388415ba1126d5407211d9
 db = scoped_session(sessionmaker(bind=engine))
 
 
+app.secret_key = b'_5#y2L"F4Q8z\n\xec]/'
+
+
+@app.route('/')
+def index():
+    if 'username' in session:
+        return redirect(url_for('main'))
+    return render_template('login.html')
+
+
 # Login
 @app.route("/login", methods=['POST'])
 def login():
     if request.method == 'POST':
         result = db.execute("SELECT * FROM users WHERE name = :name AND password = :password",
-                   {"name": request.form['name'], "password": request.form['password']}).fetchone()
-        db.commit()
+                            {"name": request.form['name'], "password": request.form['password']}).fetchone()
 
     if result is None:
-        return "Failure"
+        return redirect(url_for('index'))
 
-    return "Success"
+    session['username'] = request.form['name']
+    return redirect(url_for('index'))
+
+
+@app.route('/logout')
+def logout():
+    # remove the username from the session if it's there
+    session.pop('username', None)
+    return redirect(url_for('index'))
 
 
 # Register
-@app.route("/register", methods=['POST'])
+@app.route("/register", methods=['POST', 'GET'])
 def register():
     if request.method == 'POST':
-        db.execute("INSERT INTO users (name, password) VALUES (:name, :password)",
-                   {"name": request.form['name'], "password": request.form['password']})
-        db.commit()
 
-    return "Success"
+        # check if email is available
+        result = db.execute("SELECT * FROM users WHERE name = :name",
+                            {"name": request.form['name']}).fetchone()
+
+        if result is None:
+            db.execute("INSERT INTO users (name, password) VALUES (:name, :password)",
+                       {"name": request.form['name'], "password": request.form['password']})
+            db.commit()
+            return redirect(url_for('main'))
+
+    return render_template('register.html')
+
+
+# Get the list of all books from the database
+@app.route("/main")
+def main():
+    books = db.execute("SELECT * FROM books").fetchall()
+
+    return render_template("main.html", books=books)
+
+
+# Generates an html page for each book
+@app.route("/book/<id>")
+def book(id):
+    my_book = db.execute("SELECT * FROM books WHERE id = :id",
+                         {"id": id}).fetchone()
+
+    return render_template("book.html", book=my_book)
+
