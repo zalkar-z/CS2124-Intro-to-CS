@@ -73,7 +73,15 @@ def register():
 def main():
     books = db.execute("SELECT * FROM books").fetchall()
 
-    return render_template("main.html", books=books)
+    return render_template("main.html", books=books, user = session['username'])
+
+
+# Get the list of all books from the database
+@app.route("/library")
+def library():
+    books = db.execute("SELECT * FROM books").fetchall()
+
+    return render_template("library.html", books=books, user = session['username'])
 
 
 # Generates an html page for each book
@@ -82,5 +90,39 @@ def book(id):
     my_book = db.execute("SELECT * FROM books WHERE id = :id",
                          {"id": id}).fetchone()
 
-    return render_template("book.html", book=my_book)
+    import requests
+    res = requests.get("https://www.goodreads.com/book/review_counts.json",
+                       params={"key": "xejDlWAAaa4vNLQElPGjHg", "isbns": id})
+
+    reviews = res.json()
+
+    rating_good_reads = reviews['books'][0]['average_rating']
+    rating_number_good_reads = reviews['books'][0]['work_ratings_count']
+
+    reviews_bennington = db.execute("SELECT * FROM ratings WHERE id = :id",
+                         {"id": id}).fetchall()
+
+    sum = 0
+    for review in reviews_bennington:
+        sum += review.rating
+
+    if len(reviews_bennington) > 0:
+        average = round(sum / len(reviews_bennington), 2)
+    else:
+        average = 0
+
+    return render_template("book.html", book=my_book, user=session['username'], rating_good_reads=rating_good_reads,
+                           rating_number_good_reads=rating_number_good_reads, rating_bennington=average,
+                           rating_number_bennington=len(reviews_bennington), reviews_bennington=reviews_bennington)
+
+
+# Add a review to the database
+@app.route("/review/<id>", methods=['POST'])
+def review(id):
+
+    db.execute("INSERT INTO ratings (id, rating, review) VALUES (:id, :rating, :review)",
+               {"id": id, "rating": int(request.form['rating']), "review": request.form['review']})
+    db.commit()
+    return book(id)
+
 

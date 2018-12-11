@@ -4,31 +4,91 @@
     <!-- Required meta tags -->
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+
     <!-- Bootstrap CSS -->
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/css/bootstrap.min.css" integrity="sha384-MCw98/SFnGE8fJT3GXwEOngsV7Zt27NXFoaoApmYm81iuXoPkFOJwJ8ERdknLPMO" crossorigin="anonymous">
+
     <title>Book review app</title>
   </head>
-  <body class="text-center">
+  <body>
 
-    <nav class="navbar navbar-expand-md navbar-dark fixed-top bg-dark">
-      <a class="navbar-brand" href="main.html">Go back</a>
-      <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarCollapse" aria-controls="navbarCollapse" aria-expanded="false" aria-label="Toggle navigation">
-        <span class="navbar-toggler-icon"></span>
-      </button>
-      <div class="collapse navbar-collapse" id="navbarCollapse">
-        <ul class="navbar-nav mr-auto">
-          <li class="nav-item">
-            <a class="nav-link" href="#">Link</a>
-          </li>
-        </ul>
+    <header style="background-color: #333;">
+        <div class="row d-flex align-items-center" style="height: 70px; padding: 0 20px;">
+            <div class="col-6">
+                <a href="/main" class="text-uppercase font-weight-bold text-white">Go back</a>
+            </div>
+            <div class="col-6 text-right">
+                <p class="text-uppercase font-weight-bold text-white" style="margin-top: 10px;">Hello, <span>{{ user }}</span>!</p>
+                <a href="\logout" style="display: block; margin-top: -20px;" class="text-white"><u>Logout</u></a>
+            </div>
+        </div>
+    </header>
 
-        <p class="text-uppercase font-weight-bold text-white" style="margin-top: 10px;">Hello, <span class="user-name">Jack</span>!</p>
-      </div>
-    </nav>
-
-    <div class="jumbotron">
+    <div class="jumbotron text-left" style="padding: 50px;">
         <h1>{{ book.title }}</h1>
+        <br>
+        <p><strong>Author:</strong> {{ book.author }}</p>
+        <p style="margin-top: -10px;"><strong>Publication year:</strong> {{ book.year }}</p>
+
+        <div class="row" style="margin-top: 50px;">
+            <div class="col-6">
+                <h5>Ratings on GoodReads.com</h5>
+                <br>
+                <p><strong>Rating:</strong> {{ rating_good_reads }}/5</p>
+                <p style="margin-top: -10px;">Based on {{ rating_number_good_reads }} ratings</p>
+            </div>
+            <div class="col-6">
+                <h5>Bennington College ratings</h5>
+                <br>
+                {% if rating_number_bennington > 0 %}
+                    <p><strong>Rating:</strong> {{ rating_bennington }}/5</p>
+                    <p style="margin-top: -10px;">Based on {{ rating_number_bennington }} ratings</p>
+                {% else %}
+                    <p>No reviews yet</p>
+                {% endif %}
+            </div>
+        </div>
+
     </div>
+
+    <div class="jumbotron text-left" style="padding: 10px 50px; background-color: #fff;">
+        <h3>How was the book?</h3>
+
+        <form style="width: 50%;" action="/review/{{ book.id }}" method="POST">
+          <div class="form-group">
+            <label for="rating">Rate the book</label>
+            <select class="form-control" id="rating" name="rating" required>
+              <option value="1">1 - I didn't like it</option>
+              <option value="2">2 - It was ok</option>
+              <option value="3">3 - I liked it</option>
+              <option value="4">4 - I really liked it</option>
+              <option value="5">5 - It was amazing</option>
+            </select>
+          </div>
+
+            <div class="form-group">
+                <label for="review">Leave some comments</label>
+                <textarea class="form-control" id="review" name="review" rows="3" required></textarea>
+            </div>
+
+          <button type="submit" class="btn btn-primary">Submit</button>
+        </form>
+    </div>
+
+    <div class="jumbotron text-left" style="padding: 50px; margin: 0;">
+        <h3>Reviews</h3>
+
+        <ol>
+            {% for review in reviews_bennington%}
+                    <li style="margin: 30px 0;">
+                        <p><strong>Rating: </strong>{{ review.rating }}</p>
+                        <p style="margin-top: -10px;"><strong>Review: </strong>{{ review.review }}</p>
+                    </li>
+            {% endfor %}
+        </ol>
+
+    </div>
+
 
 
 
@@ -38,15 +98,4 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.3/umd/popper.min.js" integrity="sha384-ZMP7rVo3mIykV+2+9J3UJ46jBk0WLaUAdn689aCwoqbBJiSnjAK/l8WvCWPIPm49" crossorigin="anonymous"></script>
     <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/js/bootstrap.min.js" integrity="sha384-ChfqqxuZUCnJSK3+MXmPNIyE6ZbWh2IMqE241rYiqJxyMiZ6OW/JmZQ5stwEULTy" crossorigin="anonymous"></script>
   </body>
-
-    <style>
-
-		/* Show it is fixed to the top */
-		body {
-			min-height: 75rem;
-			padding-top: 4.5rem;
-		}
-
-
-	</style>
 </html>

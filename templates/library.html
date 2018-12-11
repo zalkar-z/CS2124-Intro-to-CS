@@ -15,7 +15,7 @@
     <header style="background-color: #333;">
         <div class="row d-flex align-items-center" style="height: 70px; padding: 0 20px;">
             <div class="col-6">
-                <a href="#" class="text-uppercase font-weight-bold text-white">Go back</a>
+                <a href="/main" class="text-uppercase font-weight-bold text-white">Go back</a>
             </div>
             <div class="col-6 text-right">
                 <p class="text-uppercase font-weight-bold text-white" style="margin-top: 10px;">Hello, <span>{{ user }}</span>!</p>
@@ -25,21 +25,18 @@
     </header>
 
     <div class="jumbotron text-center" style="padding: 150px 0;">
-        <h1>Welcome to Bennington <br> Book Review Platform!</h1>
+        <h1>Welcome to Bennington <br> Book Review Library!</h1>
     </div>
 
     <div class="text-center" style="padding: 50px 0;">
         <div class="container">
-            <h3 class="text-uppercase font-weight-bold" style="color: #ff3300; font-size: 2em;">Find your next favourite book!</h3>
+            <h3 class="text-uppercase font-weight-bold" style="color: #ff3300; font-size: 2em;">All books for you!</h3>
 
-            <div class="input-group mb-3" style="width: 50%; margin: 50px auto;">
-              <input type="text" class="form-control" placeholder="Enter the title of a book or the author of a book" aria-label="Recipient's username" aria-describedby="button-addon2">
-              <div class="input-group-append">
-                <button class="btn btn-outline-secondary" type="button" id="button-addon2">Search!</button>
-              </div>
-            </div>
-
-          <a href="/library">Or see all books here</a>
+            <ul style="width: 50%; margin: 50px auto;" class="text-left">
+            	{% for book in books %}
+                    <li><a href="book/{{ book.id }}">{{ book.title}} -- {{book.author}}</a></li>
+                {% endfor %}
+            </ul>
 
         </div>
     </div>
