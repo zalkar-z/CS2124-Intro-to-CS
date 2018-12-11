@@ -78,15 +78,19 @@
     <div class="jumbotron text-left" style="padding: 50px; margin: 0;">
         <h3>Reviews</h3>
 
-        <ol>
-            {% for review in reviews_bennington%}
+        {% if reviews_bennington %}
+            <ol>
+            {% for review in reviews_bennington %}
                     <li style="margin: 30px 0;">
+                        <p><strong>Author: </strong>{{ review.author }}</p>
                         <p><strong>Rating: </strong>{{ review.rating }}</p>
                         <p style="margin-top: -10px;"><strong>Review: </strong>{{ review.review }}</p>
                     </li>
             {% endfor %}
-        </ol>
-
+            </ol>
+        {% else %}
+            <p>No reviews yet</p>
+        {% endif %}
     </div>
 
 

@@ -81,7 +81,7 @@ def main():
 def library():
     books = db.execute("SELECT * FROM books").fetchall()
 
-    return render_template("library.html", books=books, user = session['username'])
+    return render_template("library.html", books=books, user=session['username'])
 
 
 # Generates an html page for each book
@@ -120,9 +120,11 @@ def book(id):
 @app.route("/review/<id>", methods=['POST'])
 def review(id):
 
-    db.execute("INSERT INTO ratings (id, rating, review) VALUES (:id, :rating, :review)",
-               {"id": id, "rating": int(request.form['rating']), "review": request.form['review']})
+    db.execute("INSERT INTO ratings (id, rating, review, author) VALUES (:id, :rating, :review, :author)",
+               {"id": id, "rating": int(request.form['rating']), "review": request.form['review'],
+                "author": session['username']})
     db.commit()
+
     return book(id)
 
 
