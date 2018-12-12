@@ -8,9 +8,10 @@
 #
 
 # import files
-from flask import Flask, request, render_template, session, url_for, escape, redirect
+from flask import Flask, request, render_template, session, url_for, redirect
 from sqlalchemy import create_engine
 from sqlalchemy.orm import scoped_session, sessionmaker
+import flask.ext.whooshalchemy
 
 # basic setup
 app = Flask(__name__)
@@ -20,6 +21,10 @@ db = scoped_session(sessionmaker(bind=engine))
 
 
 app.secret_key = b'_5#y2L"F4Q8z\n\xec]/'
+
+
+# set the location for the whoosh index
+app.config['WHOOSH_BASE'] = 'whoosh'
 
 
 @app.route('/')
